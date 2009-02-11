@@ -4,19 +4,19 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * A simple online compact String trie
+ * A simple online compact String trie.
  *
  * @author mdakin
  *
  */
-public class CompactStringTrie<T> {
-  private Node<T> root = new Node<T>();
+public class CompactStringTrie<T>{
+  private Node<T> root = new Node<T>(null, null);
+  public int nodesCreated;
 
-  public CompactStringTrie() {
-  }
- 
   public void add(String s, T object) {
-   
+    if (s == null) {
+      throw new NullPointerException("Input key can not be null");
+    }
     char[] chars = s.toCharArray();
     Node<T> node = root;
     Node<T> previousNode = null;
@@ -30,7 +30,7 @@ public class CompactStringTrie<T> {
       previousNode = node;
       node = node.getChildNode(chars[i]);
       if (node == null) {
-        // This occurs if there is no childnode exist:
+        // This occurs if there is no child node exist:
         // Input order to clean tree: foo(1). It adds the input to the node. 
         // or if input order is foo(1), foobar(2) 
         // Just split it from the different char, foo - bar, and add it to
@@ -71,6 +71,7 @@ public class CompactStringTrie<T> {
         newNode.children = node.children;
         node.splitAndAdd(newNode, fragmentSplitIndex);
         node.addChild(n2);
+        // Remove the old object.
         node.object = null;
       }
     }
@@ -106,7 +107,7 @@ public class CompactStringTrie<T> {
   public String toDeepString() {
     return root.dump(false);
   }
- 
+  
   public List<T> getMatchingObjects(String input) {
     Node<T> node = root;
     int index = 0;
@@ -125,14 +126,27 @@ public class CompactStringTrie<T> {
     return objects;
   }
 
+  public void walk() {
+    Node<T> node = root;
+    int index = 0;
+    int nodeCount = 0;
+    List<T> objects = new ArrayList<T>();
+    while (true) {
+      
+    }
+  }
+
   public Node<T> getRoot() {
     return root;
+  }
+  
+  public String getInfo() {
+    return "Nodes created: " + nodesCreated;
   }
 
   /**
    * 
    * @author mdakin
-   *
    */
   public static class Node <T> {
     private char[] fragment;
@@ -143,15 +157,11 @@ public class CompactStringTrie<T> {
     public Node(T t, char[] fragment) {
       this.object = t;
       this.fragment = fragment;
-      children = new Node[128];
+      resetChildren();
     }
   
+    @SuppressWarnings("unchecked")
     public void resetChildren() {
-      children = new Node[128];
-    
-    }
-
-    public Node() {
       children = new Node[128];
     }
 
@@ -167,10 +177,7 @@ public class CompactStringTrie<T> {
     }  
   
     public String getString() {
-      if (fragment == null) {
-        return "#";
-      }
-      else return new String(fragment);
+      return fragment == null ? "#" : new String(fragment);
     }
   
     public char getDefiningChar(){
@@ -178,10 +185,11 @@ public class CompactStringTrie<T> {
     }
   
     public Node<T> getChildNode(char c) {
-      if(children == null) {
-        return null;
-      }
-      return children[c];
+      return children == null ? null : children[c];
+    }
+    
+    public Node<T>[] getAllChildNodes() {
+      return children;
     }
 
     @Override
