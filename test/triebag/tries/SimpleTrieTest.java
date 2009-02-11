@@ -1,10 +1,12 @@
-package tries;
+package triebag.tries;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import junit.framework.TestCase;
+
+import triebag.tries.SimpleTrie;
 
 
 public class SimpleTrieTest extends TestCase{

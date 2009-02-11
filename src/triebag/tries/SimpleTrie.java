@@ -1,4 +1,4 @@
-package tries;
+package triebag.tries;
 
 import java.util.ArrayList;
 import java.util.Collection;

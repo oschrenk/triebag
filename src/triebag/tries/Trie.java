@@ -1,4 +1,4 @@
-package tries;
+package triebag.tries;
 
 import java.util.Collection;
 import java.util.Iterator;
@@ -16,14 +16,14 @@ public interface Trie<T> {
    * 
    * @param str A Charsequence identifying the object T
    * @param item The object to be added to Trie
-   * @throws NullPointerException if item or str is null
+   * @throws NullPointerException if item or str is {@code null}
    */
   void add(CharSequence str, T item);
   
   /**
    * 
    * @param str
-   * @return
+   * @return Retrieves the item identified by str, {@code null} otherwise.
    */
   T getItem(CharSequence str);
   
@@ -33,14 +33,14 @@ public interface Trie<T> {
    * getItemWithPrefix("foo") returns an Iterator over o1 an o2.
    *  
    * @param prefix
-   * @return
+   * @return An Iterator of Strings from Trie containing the Strings 
    */
   Iterator<T> getItemsWithPrefix(CharSequence prefix);
   
   /**
    * Returns all objects of which their defining string is included
    * @param string
-   * @return
+   * @return A collection of T 
    */
   Collection<T> getItemsInString(CharSequence string);
   
