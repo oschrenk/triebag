@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Random;
 import static triebag.tries.CompactStringTrie.*;
 
-public class CompactStringTrieTest extends TestCase {
+public class CompactStringTrieWithalpahbetindexesTest extends TestCase {
   
   public void testOnlineCompactTrieTest() {
     assertEquals(0, getSplitPoint("foo".toCharArray(), 0, "bar".toCharArray()));
@@ -31,7 +31,7 @@ public class CompactStringTrieTest extends TestCase {
   }
  
   public void testSimpleInsertion() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     ost.add("foo", "f");
     ost.add("foobar", "f2");
     ost.add("foobarjazz", "f3");  
@@ -39,7 +39,7 @@ public class CompactStringTrieTest extends TestCase {
   }
   
   public void testSimpleInsertionDifferentOrder() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     ost.add("foobarjazz", "f");
     ost.add("foobar", "f2");
     ost.add("foo", "f3");
@@ -47,7 +47,7 @@ public class CompactStringTrieTest extends TestCase {
   }
  
   public void testSimpleInsertionSeperate() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     ost.add("foo", "f");
     ost.add("bar", "f2");
     ost.add("jazz", "f3");  
@@ -55,7 +55,7 @@ public class CompactStringTrieTest extends TestCase {
   }
  
   public void testSimpleInsertionSimpleSplit() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     ost.add("foobar", "f");
     ost.add("foo", "f2");
     assertEquals("#:(f)|foo:(b)*|bar:()*|", ost.toFlatString());
@@ -63,7 +63,7 @@ public class CompactStringTrieTest extends TestCase {
  
 
   public void testSimpleInsertionComplexSplit() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     ost.add("foobar", "f");
     ost.add("foz", "f2");
     assertEquals("#:(f)|fo:(oz)|obar:()*|z:()*|", ost.toFlatString());
@@ -71,14 +71,14 @@ public class CompactStringTrieTest extends TestCase {
 
 
   public void testInsertionOfAllCombinationsResultsSameTrie() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     String[] testStr = {"aba", "abc", "a", "ab", "abba", "aaa", "baa"};
     for(String s : testStr) {
       ost.add(s, s);
     }
     System.out.println(ost.getInfo());
     for(int i = 0; i < testStr.length; i++ ) {
-      CompactStringTrie<String> newOst = new CompactStringTrie<String>();
+      CompactStringTrieWithAlphabetIndex<String> newOst = new CompactStringTrieWithAlphabetIndex<String>();
       for(int j = i; j < i + testStr.length; j++) {
         String s = testStr[j % testStr.length];
         newOst.add(s, s);
@@ -88,7 +88,7 @@ public class CompactStringTrieTest extends TestCase {
   }
  
   public void testSimpleInsertionComplexSplit6() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     String[] testStr = {"blahfoobar", "blahfoojazz", "blahjazz", "blahfoo"};
     for(String s : testStr) {
       ost.add(s, s);
@@ -97,10 +97,10 @@ public class CompactStringTrieTest extends TestCase {
   }
  
   public void testrandomInsertionsInAllCombinationsResultsTheSameTrie() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    CompactStringTrieWithAlphabetIndex<String> ost = new CompactStringTrieWithAlphabetIndex<String>();
     String[] testStrArray = new String[100];
     for (int i = 0; i < testStrArray.length; i++) {
-      testStrArray[i] = createRandomStringFrom("01234567-", 10);
+      testStrArray[i] = createRandomStringFrom("0123456789", 10);
     }
     System.out.println(Arrays.toString(testStrArray));
     for(String s : testStrArray) {
