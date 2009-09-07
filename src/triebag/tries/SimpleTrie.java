@@ -37,11 +37,6 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T>{
     
   }
   
-  /**
-   * Returns the item with given prefix from the tree
-   * @param prefix
-   * @return
-   */
   public T getItem(CharSequence prefix) {
     Node<T> node = root;
     int i = 0;

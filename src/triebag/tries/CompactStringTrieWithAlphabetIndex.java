@@ -2,7 +2,6 @@ package triebag.tries;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,7 +10,7 @@ import java.util.List;
  * @author mdakin
  *
  */
-public class CompactStringTrie<T> {
+public class CompactStringTrieWithAlphabetIndex<T> {
   private Node<T> root = new Node<T>(null, null);
   public int nodesCreated;
   static Alphabet alphabet= new TurkishAlphabet();
@@ -20,7 +19,7 @@ public class CompactStringTrie<T> {
     if (s == null) {
       throw new NullPointerException("Input key can not be null");
     }
-    char[] chars = s.toCharArray();
+    byte[] indexedChars = alphabet.toIndexes(s);
     Node<T> node = root;
     Node<T> previousNode = null;
     // i holds the char index for input
@@ -31,20 +30,20 @@ public class CompactStringTrie<T> {
     // is found in subnodes
     while (node != null) {
       previousNode = node;
-      node = node.getChildNode(chars[i]);
+      node = node.getChildNode(indexedChars[i]);
       if (node == null) {
         // This occurs if there is no child node exist:
         // Input order to clean tree: foo(1). It adds the input to the node. 
         // or if input order is foo(1), foobar(2) 
         // Just split it from the different char, foo - bar, and add it to
         // node so it will be "root - foo(1) - bar(2)"
-        previousNode.addChild(new Node<T>(object, getSuffix(chars, i)));
+        previousNode.addChild(new Node<T>(object, getSuffix(indexedChars, i)));
       }
       else {
-        fragmentSplitIndex = getSplitPoint(chars, i, node.fragment);
+        fragmentSplitIndex = getSplitPoint(indexedChars, i, node.fragment);
         i += fragmentSplitIndex;
         if ((fragmentSplitIndex < node.fragment.length) ||
-            (i == chars.length && fragmentSplitIndex == node.fragment.length)) {
+            (i == indexedChars.length && fragmentSplitIndex == node.fragment.length)) {
 //          System.out.println("fragment: " + new String(node.fragment) + " i: " + i
 //              + " input: " + s + " fragmentSplitIndex:" + fragmentSplitIndex );
           break;
@@ -63,14 +62,14 @@ public class CompactStringTrie<T> {
     //
     if(node != null) {
       Node<T> newNode = new Node<T>(node.object, getSuffix(node.fragment, fragmentSplitIndex));
-      if (i == chars.length) {
+      if (i == indexedChars.length) {
         node.object = object;
         if (fragmentSplitIndex < node.fragment.length) {
           newNode.children = node.children;
           node.splitAndAdd(newNode, fragmentSplitIndex);
         }
       } else {
-        Node<T> n2 = new Node<T>(object, getSuffix(chars, i));
+        Node<T> n2 = new Node<T>(object, getSuffix(indexedChars, i));
         newNode.children = node.children;
         node.splitAndAdd(newNode, fragmentSplitIndex);
         node.addChild(n2);
@@ -82,7 +81,7 @@ public class CompactStringTrie<T> {
 //    System.out.println(root.dump(true));
 //  }
  
-  static int getSplitPoint(char[] input, int start1, char[] fragment){
+  static int getSplitPoint(byte[] input, int start1, byte[] fragment){
     int fragmentIndex = 0;
     while (start1 < input.length && fragmentIndex < fragment.length && 
         input[start1++] == fragment[fragmentIndex]) {
@@ -91,11 +90,10 @@ public class CompactStringTrie<T> {
     return fragmentIndex;
   }
  
-  private static char[] getSuffix(char[] arr, int index) {
-    return Arrays.copyOfRange(arr, index, arr.length);
-//    char[] res = new char[arr.length - index];
-//    System.arraycopy(arr, index, res, 0, arr.length - index);
-//    return res;
+  private static byte[] getSuffix(byte[] arr, int index) {
+    byte[] res = new byte[arr.length - index];
+    System.arraycopy(arr, index, res, 0, arr.length - index);
+    return res;
   }
  
   public String toFlatString() {
@@ -112,7 +110,7 @@ public class CompactStringTrie<T> {
     String s = "";
     List<T> objects = new ArrayList<T>();
     while (index < input.length()) {
-      node = node.getChildNode(input.charAt(index));
+      node = node.getChildNode((byte)alphabet.getIndex(input.charAt(index)));
       if (node == null) break;
       String nodeString = node.getString();
       s += nodeString;
@@ -147,12 +145,12 @@ public class CompactStringTrie<T> {
    * @author mdakin
    */
   public static class Node <T> {
-    private char[] fragment;
+    private byte[] fragment;
     int index;
     private ArrayList<Node<T>> children;
     private T object;
   
-    public Node(T t, char[] fragment) {
+    public Node(T t, byte[] fragment) {
       this.object = t;
       this.fragment = fragment;
       resetChildren();
@@ -165,10 +163,10 @@ public class CompactStringTrie<T> {
 
     public void addChild(Node<T> node) {
       int index = 0;
-      int x = alphabet.getIndex(node.getDefiningChar());
+      int x = node.getChar();
       int counter = 0;
       for (int i=0; i < children.size(); i++) {
-        if (x < alphabet.getIndex(children.get(i).getChar())) {
+        if (x < children.get(i).getChar()) {
           break;
         }
         counter++;
@@ -183,14 +181,10 @@ public class CompactStringTrie<T> {
     }  
   
     public String getString() {
-      return fragment == null ? "#" : new String(fragment);
+      return getFragmentString();
     }
   
-    public char getDefiningChar(){
-      return fragment[0];
-    }
-  
-    public Node<T> getChildNode(char c) {
+    public Node<T> getChildNode(byte c) {
       if (children == null) return null;
       for (Node<T> node : children) {
         if (node.fragment[0] == c) return node;
@@ -210,7 +204,10 @@ public class CompactStringTrie<T> {
         s += "( ";
         for (Node<T> node : children) {
           if(node != null) {
-             s += node.getChar() + " ";
+            byte b = node.getChar();
+             if (b != -1) {
+               s += alphabet.getChar(b) + " ";
+             }
           }
         }
         s += ")";
@@ -223,11 +220,23 @@ public class CompactStringTrie<T> {
       return s;
     }
   
-    private char getChar() {
+    private byte getChar() {
       if (fragment == null) {
         return '#';
       }
       return fragment[0];
+    }
+    
+
+    private String getFragmentString() {
+      if (fragment == null) {
+        return "#";
+      }
+      String frs = "";
+      for (byte b: fragment) {
+        frs += alphabet.getChar(b);
+      }
+      return frs;
     }
 
     /**

@@ -1,16 +1,14 @@
 package triebag.tries;
 
 public interface Alphabet {
+  
+  int getSize();
+  
+  int getIndex(char c);
+  
+  char getChar(int index);
+  
+  boolean isValid(char c);
 
-	boolean isValid(char c);
-
-	int getIndex(char c);
-
-	char getChar(int index);
-
-	boolean isVowel(char c);
-
-	public boolean isConsonant(char c);
-
-	public int getSize();
+  byte[] toIndexes(String s);
 }
