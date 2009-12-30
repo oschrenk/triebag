@@ -8,7 +8,7 @@ import java.util.Arrays;
 import java.util.Random;
 import static triebag.tries.CompactStringTrie.*;
 
-public class CompactStringTrieWithalpahbetindexesTest extends TestCase {
+public class CompactStringTrieWithAlpahbetindexTest extends TestCase {
   
   public void testOnlineCompactTrieTest() {
     assertEquals(0, getSplitPoint("foo".toCharArray(), 0, "bar".toCharArray()));

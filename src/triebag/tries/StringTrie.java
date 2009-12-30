@@ -1,9 +1,11 @@
 package triebag.tries;
 
+import java.io.BufferedOutputStream;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
 
 /**
  * A simple online compact String trie.
@@ -11,18 +13,18 @@ import java.util.List;
  * @author mdakin
  *
  */
-public class CompactStringTrieWithAlphabetIndex<T> {
-  private Node<T> root = new Node<T>(null, null);
+public class StringTrie {
+  private Node root = new Node(false, null);
   public int nodesCreated;
   static Alphabet alphabet= new TurkishAlphabet();
 
-  public void add(String s, T object) {
+  public void add(String s) {
     if (s == null) {
       throw new NullPointerException("Input key can not be null");
     }
     byte[] indexedChars = alphabet.toIndexes(s);
-    Node<T> node = root;
-    Node<T> previousNode = null;
+    Node node = root;
+    Node previousNode = null;
     // i holds the char index for input
     int i = 0;
     // fragmentSplitIndex is the index of the last fragment
@@ -38,7 +40,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
         // or if input order is foo(1), foobar(2) 
         // Just split it from the different char, foo - bar, and add it to
         // node so it will be "root - foo(1) - bar(2)"
-        previousNode.addChild(new Node<T>(object, getSuffix(indexedChars, i)));
+        previousNode.addChild(new Node(true, getSuffix(indexedChars, i)));
       }
       else {
         fragmentSplitIndex = getSplitPoint(indexedChars, i, node.fragment);
@@ -62,20 +64,19 @@ public class CompactStringTrieWithAlphabetIndex<T> {
     //         \ _ obar(1)
     //
     if(node != null) {
-      Node<T> newNode = new Node<T>(node.object, getSuffix(node.fragment, fragmentSplitIndex));
+      Node newNode = new Node(node.wordNode, getSuffix(node.fragment, fragmentSplitIndex));
       if (i == indexedChars.length) {
-        node.object = object;
+        node.wordNode = true;
         if (fragmentSplitIndex < node.fragment.length) {
           newNode.children = node.children;
           node.splitAndAdd(newNode, fragmentSplitIndex);
         }
       } else {
-        Node<T> n2 = new Node<T>(object, getSuffix(indexedChars, i));
+        Node n2 = new Node(true, getSuffix(indexedChars, i));
         newNode.children = node.children;
         node.splitAndAdd(newNode, fragmentSplitIndex);
         node.addChild(n2);
-        // Remove the old object.
-        node.object = null;
+        node.wordNode = false;
       }
     }
   }
@@ -105,35 +106,35 @@ public class CompactStringTrieWithAlphabetIndex<T> {
     return root.dump(false);
   }
   
-  public List<T> getMatchingObjects(String input) {
-    Node<T> node = root;
-    int index = 0;
-    String s = "";
-    List<T> objects = new ArrayList<T>();
-    while (index < input.length()) {
-      node = node.getChildNode((byte)alphabet.getIndex(input.charAt(index)));
-      if (node == null) break;
-      String nodeString = node.getString();
-      s += nodeString;
-      if (input.startsWith(s) && node.hasObject()) {
-          objects.add(node.object);
-      }
-      index += nodeString.length();
-    }
-    return objects;
-  }
+//  public List<String> getMatchingStrings(String input) {
+//    Node node = root;
+//    int index = 0;
+//    String s = "";
+//    List<String> objects = new ArrayList<String>();
+//    while (index < input.length()) {
+//      node = node.getChildNode((byte)alphabet.getIndex(input.charAt(index)));
+//      if (node == null) break;
+//      String nodeString = node.getString();
+//      s += nodeString;
+//      if (input.startsWith(s) && node.hasObject()) {
+//          objects.add(node.object);
+//      }
+//      index += nodeString.length();
+//    }
+//    return objects;
+//  }
 
-  public void walk() {
-    Node<T> node = root;
-    int index = 0;
-    int nodeCount = 0;
-    List<T> objects = new ArrayList<T>();
-    while (true) {
-      //TODO(mdakin): implement walk.
-    }
-  }
+//  public void walk() {
+//    Node<T> node = root;
+//    int index = 0;
+//    int nodeCount = 0;
+//    List<T> objects = new ArrayList<T>();
+//    while (true) {
+//      //TODO(mdakin): implement walk.
+//    }
+//  }
 
-  public Node<T> getRoot() {
+  public Node getRoot() {
     return root;
   }
   
@@ -145,24 +146,25 @@ public class CompactStringTrieWithAlphabetIndex<T> {
    * 
    * @author mdakin
    */
-  public static class Node <T> {
+  public static class Node {
     private byte[] fragment;
-    int index;
-    private ArrayList<Node<T>> children;
-    private T object;
+//    int index;
+    int attribute;
+    boolean wordNode;
+    private ArrayList<Node> children;
   
-    public Node(T t, byte[] fragment) {
-      this.object = t;
+    public Node(boolean wordNode, byte[] fragment) {
+      this.wordNode = wordNode;
       this.fragment = fragment;
       resetChildren();
     }
   
     @SuppressWarnings("unchecked")
     public void resetChildren() {
-      children = new ArrayList<Node<T>>();
+      children = new ArrayList<Node>();
     }
 
-    public void addChild(Node<T> node) {
+    public void addChild(Node node) {
       int index = 0;
       int x = node.getChar();
       int counter = 0;
@@ -175,7 +177,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       children.add(counter, node);
     }
   
-    public void splitAndAdd(Node<T> node, int fragmentSplitIndex) {
+    public void splitAndAdd(Node node, int fragmentSplitIndex) {
       fragment = Arrays.copyOf(fragment, fragmentSplitIndex);
       resetChildren();
       addChild(node);     
@@ -184,17 +186,25 @@ public class CompactStringTrieWithAlphabetIndex<T> {
     public String getString() {
       return getFragmentString();
     }
+    
+    public char[] getChars() {
+      char[] chars = new char[fragment.length];
+      for (int i = 0; i < fragment.length; i++) {
+        chars[i] = alphabet.getChar(fragment[i]);
+      }
+      return chars;
+    }
   
-    public Node<T> getChildNode(byte c) {
+    public Node getChildNode(byte c) {
       if (children == null) return null;
-      for (Node<T> node : children) {
+      for (Node node : children) {
         if (node.fragment[0] == c) return node;
       }
       return null;
     }
     
     @SuppressWarnings("unchecked")
-    public Node<T>[] getAllChildNodes() {
+    public Node[] getChildren() {
       return children.toArray(new Node[children.size()]);
     }
 
@@ -203,7 +213,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       String s = getString() + " : ";
       if (children != null) {
         s += "( ";
-        for (Node<T> node : children) {
+        for (Node node : children) {
           if(node != null) {
             byte b = node.getChar();
              if (b != -1) {
@@ -215,7 +225,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       } else {
         s += ".";
       }
-      if (object != null) {
+      if (wordNode) {
         s += " * ";
       }
       return s;
@@ -233,11 +243,11 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       if (fragment == null) {
         return "#";
       }
-      String frs = "";
+      StringBuilder frs = new StringBuilder();
       for (byte b: fragment) {
-        frs += alphabet.getChar(b);
+        frs.append(alphabet.getChar(b));
       }
-      return frs;
+      return frs.toString();
     }
 
     /**
@@ -253,7 +263,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       b.append(indentChars).append(this.toString());
       b.append("\n");
       if (children != null) {
-        for (Node<T> subNode : this.children) {
+        for (Node subNode : this.children) {
           if(subNode != null) {
             subNode.toDeepString(b, level + 1);
           }
@@ -279,7 +289,7 @@ public class CompactStringTrieWithAlphabetIndex<T> {
     public final void toFlatString(StringBuffer b) {
         b.append(this.toString().replaceAll(" ", "")).append("|");
       if (children != null) {
-        for (Node<T> subNode : this.children) {
+        for (Node subNode : this.children) {
           if(subNode != null) {
             subNode.toFlatString(b);
           }      
@@ -305,9 +315,70 @@ public class CompactStringTrieWithAlphabetIndex<T> {
       return b.toString();
     }
 
-    public boolean hasObject() {
-      return object != null;
+    public boolean hasString() {
+      return wordNode;
     }
+    
+    /**
+     * Writes content of node and all sub nodes recursively to data output stream.
+     * TODO(mdakin): Serialized size could be improved by writing less for nodes
+     * containing less chars.
+     * @param dos Data output stream
+     * @throws IOException if something goes wrong during write.
+     */
+    public void serialize(DataOutputStream dos) throws IOException {
+      dos.writeInt(fragment.length);
+//      System.out.println("written len: " + str.length);
+      for (byte c: fragment) {
+//        System.out.println("written char: " + c);
+        dos.writeChar(c);
+      }
+      dos.writeInt(attribute);
+//      dos.writeInt(bitmap);
+      if(children == null) {
+        return;
+      }
+      for(Node child: children) {
+        child.serialize(dos);
+      }    
+    }
+    
+    public void deserialize(DataInputStream dis) throws IOException {
+//      int len = dis.readInt();
+////      System.out.println("read len: " + len );
+//      fragment = new byte[len];
+//      for (int i=0; i<len; i++) {
+//        fragment[i] = dis.readByte();
+////        System.out.println("read char: " + str[i] );
+//      }
+//      attribute = dis.readInt();
+////      bitmap = dis.readInt();
+//      if (bitmap == 0) {
+//        return;
+//      } else {
+//        // Create the node list in advance to gain performance. We know that it 
+//        // will contain "number of one bits in the bitmap" count of sub nodes.
+//        // So we will not bother expanding the bitmap
+//        children = new Node[Integer.bitCount(bitmap)];
+//      }
+//      int limit = Integer.numberOfLeadingZeros(bitmap);
+//      for (int i = Integer.numberOfTrailingZeros(bitmap); i < 32 - limit; i++) {
+//        if (hasChild(i)) {
+//          Node child = new Node(alphabet.getChar(i));
+//          children[getArrayIndex(i)] = child;
+//          child.deserialize(dis);
+////          Node n = addNodeFor(TurkishAlphabet.getChar(i));
+////          n.deserialize(dis);
+//        }
+//      }
+    }
+    
+  }
+
+  
+  
+  public void save(BufferedOutputStream bufferedOutputStream) {
+    
   }
  
 }

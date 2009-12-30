@@ -2,13 +2,11 @@ package triebag.tries;
 
 import junit.framework.TestCase;
 
-import triebag.tries.CompactStringTrie;
-
 import java.util.Arrays;
 import java.util.Random;
 import static triebag.tries.CompactStringTrie.*;
 
-public class CompactStringTrieTest extends TestCase {
+public class StringTrieTest extends TestCase {
   
   public void testOnlineCompactTrieTest() {
     assertEquals(0, getSplitPoint("foo".toCharArray(), 0, "bar".toCharArray()));
@@ -28,96 +26,91 @@ public class CompactStringTrieTest extends TestCase {
     assertEquals(3, getSplitPoint("xyzfoo".toCharArray(), 3, "foo".toCharArray()));
     assertEquals(2, getSplitPoint("foo".toCharArray(), 1, "oobar".toCharArray()));
     assertEquals(3, getSplitPoint("bool".toCharArray(), 1, "ool".toCharArray()));  
-    
-    assertEquals(1, getSplitPoint("fool".toCharArray(), 2, "o".toCharArray()));
-    assertEquals(1, getSplitPoint("foobar".toCharArray(), 5, "rex".toCharArray()));
-    assertEquals(0, getSplitPoint("bool".toCharArray(), 4, "boolean".toCharArray()));  
-    
   }
  
   public void testSimpleInsertion() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
-    ost.add("foo", "f");
-    ost.add("foobar", "f2");
-    ost.add("foobarjazz", "f3");  
+    StringTrie ost = new StringTrie();
+    ost.add("foo");
+    ost.add("foobar");
+    ost.add("foobarjazz");  
     assertEquals("#:(f)|foo:(b)*|bar:(j)*|jazz:()*|", ost.toFlatString());
   }
   
   public void testSimpleInsertionDifferentOrder() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
-    ost.add("foobarjazz", "f");
-    ost.add("foobar", "f2");
-    ost.add("foo", "f3");
+    StringTrie ost = new StringTrie();
+    ost.add("foobarjazz");
+    ost.add("foobar");
+    ost.add("foo");
     assertEquals("#:(f)|foo:(b)*|bar:(j)*|jazz:()*|", ost.toFlatString());
   }
  
   public void testSimpleInsertionSeperate() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
-    ost.add("foo", "f");
-    ost.add("bar", "f2");
-    ost.add("jazz", "f3");  
+    StringTrie ost = new StringTrie();
+    ost.add("foo");
+    ost.add("bar");
+    ost.add("jazz");  
     assertEquals("#:(bfj)|bar:()*|foo:()*|jazz:()*|", ost.toFlatString());
   }
  
   public void testSimpleInsertionSimpleSplit() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
-    ost.add("foobar", "f");
-    ost.add("foo", "f2");
+    StringTrie ost = new StringTrie();
+    ost.add("foobar");
+    ost.add("foo");
     assertEquals("#:(f)|foo:(b)*|bar:()*|", ost.toFlatString());
   }
  
 
   public void testSimpleInsertionComplexSplit() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
-    ost.add("foobar", "f");
-    ost.add("foz", "f2");
+    StringTrie ost = new StringTrie();
+    ost.add("foobar");
+    ost.add("foz");
     assertEquals("#:(f)|fo:(oz)|obar:()*|z:()*|", ost.toFlatString());
   }
 
 
   public void testInsertionOfAllCombinationsResultsSameTrie() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    StringTrie ost = new StringTrie();
     String[] testStr = {"aba", "abc", "a", "ab", "abba", "aaa", "baa"};
     for(String s : testStr) {
-      ost.add(s, s);
+      ost.add(s);
     }
     System.out.println(ost.getInfo());
     for(int i = 0; i < testStr.length; i++ ) {
-      CompactStringTrie<String> newOst = new CompactStringTrie<String>();
+      StringTrie newOst = new StringTrie();
       for(int j = i; j < i + testStr.length; j++) {
         String s = testStr[j % testStr.length];
-        newOst.add(s, s);
+        newOst.add(s);
       }
       assertEquals(ost.toFlatString(), newOst.toFlatString());
     }
   }
  
   public void testSimpleInsertionComplexSplit6() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    StringTrie ost = new StringTrie();
     String[] testStr = {"blahfoobar", "blahfoojazz", "blahjazz", "blahfoo"};
     for(String s : testStr) {
-      ost.add(s, s);
+      ost.add(s);
     }
     assertEquals("#:(b)|blah:(fj)|foo:(bj)*|bar:()*|jazz:()*|jazz:()*|", ost.toFlatString());
   }
  
   public void testrandomInsertionsInAllCombinationsResultsTheSameTrie() {
-    CompactStringTrie<String> ost = new CompactStringTrie<String>();
+    StringTrie ost = new StringTrie();
     String[] testStrArray = new String[100];
     for (int i = 0; i < testStrArray.length; i++) {
-      testStrArray[i] = createRandomStringFrom("01234567-", 10);
+      testStrArray[i] = createRandomStringFrom("0123456789", 10);
     }
     System.out.println(Arrays.toString(testStrArray));
     for(String s : testStrArray) {
-      ost.add(s, s);
+      ost.add(s);
     }
     System.out.println(ost.toDeepString());
     System.out.println(ost.toFlatString());
     for(int i = 0; i < testStrArray.length; i++ ) {
-      CompactStringTrie<String> newOst = new CompactStringTrie<String>();
+      StringTrie newOst = new StringTrie();
       for(int j = i; j < i + testStrArray.length; j++) {
         String s = testStrArray[j % testStrArray.length];
-        newOst.add(s, s);
+        newOst.add(s);
       }
       assertEquals(ost.toFlatString(), newOst.toFlatString());
     }

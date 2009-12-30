@@ -1,8 +1,8 @@
 package triebag.tries;
 
+
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 /**
@@ -41,6 +41,7 @@ public class CompactStringTrie<T> {
         previousNode.addChild(new Node<T>(object, getSuffix(chars, i)));
       }
       else {
+        // fragment split index finds the different character of input
         fragmentSplitIndex = getSplitPoint(chars, i, node.fragment);
         i += fragmentSplitIndex;
         if ((fragmentSplitIndex < node.fragment.length) ||
@@ -82,10 +83,25 @@ public class CompactStringTrie<T> {
 //    System.out.println(root.dump(true));
 //  }
  
-  static int getSplitPoint(char[] input, int start1, char[] fragment){
+  /**
+   * Finds the last position of common chars for 2 char arrays relative to a given index.
+   * @param input
+   * @param start
+   * @param fragment
+   * @return 
+   *   for input: "foo" fragment = "foobar" index = 0, returns 3
+   *   for input: "fool" fragment = "foobar" index = 0, returns 3
+   *   for input: "fool" fragment = "foobar" index = 1, returns 2
+   *   for input: "foo" fragment = "obar" index = 1, returns 2
+   *   for input: "xyzfoo" fragment = "foo" index = 3, returns 2
+   *   for input: "xyzfoo" fragment = "xyz" index = 3, returns 0
+   *   for input: "xyz" fragment = "abc" index = 0, returns 0
+   * 
+   */
+  static int getSplitPoint(char[] input, int start, char[] fragment){
     int fragmentIndex = 0;
-    while (start1 < input.length && fragmentIndex < fragment.length && 
-        input[start1++] == fragment[fragmentIndex]) {
+    while (start < input.length && fragmentIndex < fragment.length && 
+        input[start++] == fragment[fragmentIndex]) {
       fragmentIndex++;
     }
     return fragmentIndex;
