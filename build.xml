@@ -6,7 +6,7 @@
 		 x2: increment for minor releases
 		 x3: increment for bugfix release
 	-->
-	<property name="version.num" value="1.0.0" />
+	<property name="version.num" value="1.0.1" />
 
 	<!-- set global properties for this build -->
 	<property name="build" location="antbuild" />

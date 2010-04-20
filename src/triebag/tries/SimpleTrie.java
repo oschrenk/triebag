@@ -11,7 +11,7 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 	/**
 	 * Default constructor
 	 */
-	SimpleTrie() {
+	public SimpleTrie() {
 		root = new CharNode<T>();
 	}
 
