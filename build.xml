@@ -1,0 +1,75 @@
+<project name="triebag" default="jar" basedir=".">
+
+	<!-- Version format
+		 x1.x2.x3
+		 x1: increment for major releases
+		 x2: increment for minor releases
+		 x3: increment for bugfix release
+	-->
+	<property name="version.num" value="1.0.0" />
+
+	<!-- set global properties for this build -->
+	<property name="build" location="antbuild" />
+	<property name="lib" location="lib" />
+	<property name="tmpsrc" location="${build}/src" />
+	<property name="classes" location="${build}/classes" />
+	<property name="dist" location="${build}/dist" />
+
+	<!-- Create folders -->
+	<target name="init" description="creates folders and copies source files">
+		<mkdir dir="${build}" />
+		<mkdir dir="${lib}" />
+		<mkdir dir="${tmpsrc}" />
+		<mkdir dir="${classes}" />
+		<mkdir dir="${dist}" />
+
+		<copy todir="${tmpsrc}" preservelastmodified="true">
+			<fileset dir="src/.">
+				<include name="**/*.java" />
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Compile target-->
+	<target name="compile" description="compile the source " depends="init">
+		<javac encoding="utf8" srcdir="${tmpsrc}" destdir="${classes}" debug="true" target="1.5" source="1.5" deprecation="true">
+			<classpath>
+				<fileset dir="${lib}">
+					<include name="**.*jar" />
+				</fileset>
+			</classpath>
+		</javac>
+	</target>
+
+	<!-- JAR creation -->
+	<target name="jar" depends="compile" description="generate the distribution">
+		<delete file="${dist}/java-util.jar" />
+
+		<!-- remember the time stamp for use in manifest -->
+		<tstamp>
+			<format property="TODAY" pattern="yyyy-MM-dd HH:mm:ss" />
+		</tstamp>
+
+		<manifest file="MANIFEST.MF">
+			<attribute name="Implementation-Version" value="${version.num}" />
+			<attribute name="Built-Date" value="${TODAY}" />
+		</manifest>
+
+		<jar destfile="${dist}/triebag-${version.num}.jar" manifest="MANIFEST.MF">
+			<fileset dir="${classes}" includes="**/*.class" />
+		</jar>
+
+		<antcall target="clean" />
+	</target>
+
+	<!-- Cleaning targets -->
+	<target name="clean" description="clean up, leaving distribution">
+		<delete dir="${tmpsrc}" />
+		<delete dir="${classes}" />
+	</target>
+
+	<target name="clean-all" description="clean up everything">
+		<delete dir="${build}" />
+	</target>
+
+</project>

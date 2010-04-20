@@ -1,0 +1,7 @@
+h1. README
+
+Taken from "http://code.google.com/p/triebag/":http://code.google.com/p/triebag/ and slightly modified for personal use.
+
+This project uses the
+
+"GNU General Public License v3":http://www.gnu.org/licenses/gpl.html
