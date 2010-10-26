@@ -8,7 +8,7 @@ public class CharNode<T> {
 	private T item;
 	private Map<Character, CharNode<T>> children;
 
-	public CharNode<T> addNode(char c) {
+	public CharNode<T> addNode(final char c) {
 		if (children == null) {
 			children = new HashMap<Character, CharNode<T>>();
 		}
@@ -17,7 +17,7 @@ public class CharNode<T> {
 		return emptyNode;
 	}
 
-	protected CharNode<T> getChildNode(char c) {
+	protected CharNode<T> getChildNode(final char c) {
 		if (children == null) {
 			return null;
 		}
@@ -28,7 +28,13 @@ public class CharNode<T> {
 		return item;
 	}
 
-	protected void setItem(T item) {
+	protected void setItem(final T item) {
 		this.item = item;
 	}
+
+	@Override
+	public String toString() {
+		return "CharNode [item=" + item + ", children=" + children + "]";
+	}
+
 }

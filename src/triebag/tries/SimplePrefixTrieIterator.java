@@ -4,14 +4,16 @@ import java.util.Iterator;
 import java.util.Stack;
 
 public class SimplePrefixTrieIterator<T> implements Iterator<T> {
-	Stack<CharNode<T>> others = new Stack<CharNode<T>>();
-	CharNode<T> nextNodeWithItem = null;
 
-	SimplePrefixTrieIterator(CharNode<T> startNode) {
+	private final Stack<CharNode<T>> others = new Stack<CharNode<T>>();
+	private CharNode<T> nextNodeWithItem = null;
+
+	protected SimplePrefixTrieIterator(final CharNode<T> startNode) {
 		others.push(startNode);
 	}
 
 	private void walkToNextFullNode() {
+
 		nextNodeWithItem = null;
 		while (!others.empty()) {
 			CharNode<T> n = others.pop();
@@ -21,15 +23,18 @@ public class SimplePrefixTrieIterator<T> implements Iterator<T> {
 		}
 	}
 
+	@Override
 	public boolean hasNext() {
 		walkToNextFullNode();
 		return nextNodeWithItem != null;
 	}
 
+	@Override
 	public T next() {
 		return nextNodeWithItem.getItem();
 	}
 
+	@Override
 	public void remove() {
 
 	}

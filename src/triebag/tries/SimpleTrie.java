@@ -15,7 +15,8 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 		root = new CharNode<T>();
 	}
 
-	public void add(CharSequence str, T item) {
+	@Override
+	public void add(final CharSequence str, final T item) {
 
 		// start with the root node
 		CharNode<T> node = root;
@@ -49,11 +50,12 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 
 	/**
 	 * Returns the item with given prefix from the trie
-	 * 
+	 *
 	 * @param prefix
 	 * @return
 	 */
-	public T getItem(CharSequence prefix) {
+	@Override
+	public T getItem(final CharSequence prefix) {
 
 		CharNode<T> node = root;
 
@@ -72,23 +74,24 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 
 	/**
 	 * Returns all items along a path in the trie.
-	 * 
+	 *
 	 * For instance if the trie contains three items
 	 * <ul>
 	 * <li>mo</li>
 	 * <li>moto</li>
 	 * <li>motorway</li>
 	 * </ul>
-	 * 
+	 *
 	 * and you search for <code>motorway</<code> the method will return
 	 * all three items associated with these items.
-	 * 
+	 *
 	 * @param str
 	 *            the search string
 	 * @return a {@link Collection} of items along the path or an empty one if
 	 *         none is found
 	 */
-	public Collection<T> getItemsInString(CharSequence str) {
+	@Override
+	public Collection<T> getItemsInString(final CharSequence str) {
 
 		CharNode<T> node = root;
 
@@ -105,10 +108,13 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 		return res;
 	}
 
-	public Iterator<T> getItemsWithPrefix(CharSequence prefix) {
+	@Override
+	public Iterator<T> getItemsWithPrefix(final CharSequence prefix) {
 
 		CharNode<T> node = root;
 		CharNode<T> previousNode = root;
+
+		System.out.println(root);
 
 		int i = 0;
 		while (i < prefix.length() && node != null) {
@@ -120,6 +126,7 @@ public class SimpleTrie<T> implements Trie<T>, Iterable<T> {
 		return new SimplePrefixTrieIterator<T>(previousNode);
 	}
 
+	@Override
 	public Iterator<T> iterator() {
 		return new SimplePrefixTrieIterator<T>(root);
 	}
