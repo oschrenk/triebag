@@ -1,7 +1,6 @@
 package triebag.tries;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
 
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -11,25 +10,21 @@ import org.junit.Test;
 
 public class SimpleTrieTest {
 
-	@Test
-	public void testNullCharStream() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
-		try {
-			ptrie.add(null, new Foo());
-			fail("Null pointer expected.");
-		} catch (NullPointerException e) {
-			// pass
-		}
+	@Test(expected = NullPointerException.class)
+	public void testNullCharStream() throws NullPointerException {
+		Trie<Foo> ptrie = new Trie<Foo>();
+		ptrie.add(null, new Foo());
 	}
 
+	@Test
 	public void testEmptyTrie() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
+		Trie<Foo> ptrie = new Trie<Foo>();
 		assertEquals(0, toList(ptrie.getItemsWithPrefix("foo")).size());
 	}
 
 	@Test
 	public void testSingleInsertion() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
+		Trie<Foo> ptrie = new Trie<Foo>();
 		Foo b = new Foo();
 		ptrie.add("foo", b);
 		assertEquals(b, ptrie.getItem("foo"));
@@ -37,7 +32,7 @@ public class SimpleTrieTest {
 
 	@Test
 	public void testSameStringInsertionsReplaces() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
+		Trie<Foo> ptrie = new Trie<Foo>();
 		Foo b = new Foo();
 		Foo b2 = new Foo();
 		ptrie.add("foo", b);
@@ -47,7 +42,7 @@ public class SimpleTrieTest {
 
 	@Test
 	public void testDifferentStrInsertion() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
+		Trie<Foo> ptrie = new Trie<Foo>();
 		Foo b = new Foo();
 		Foo b2 = new Foo();
 		ptrie.add("foo", b);
@@ -58,14 +53,14 @@ public class SimpleTrieTest {
 
 	@Test
 	public void testSubStrInsertion() {
-		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
+		Trie<Foo> ptrie = new Trie<Foo>();
 		Foo b = new Foo();
 		Foo b2 = new Foo();
 		ptrie.add("foo", b);
 		ptrie.add("foobar", b2);
 		assertEquals(b, ptrie.getItem("foo"));
 		assertEquals(b2, ptrie.getItem("foobar"));
-		ptrie = new SimpleTrie<Foo>();
+		ptrie = new Trie<Foo>();
 		ptrie.add("foobar", b);
 		ptrie.add("foo", b2);
 		assertEquals(b, ptrie.getItem("foobar"));
