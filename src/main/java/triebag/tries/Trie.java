@@ -114,9 +114,11 @@ public class Trie<T> implements Iterable<T> {
 	}
 
 	/**
-	 * Returns an Iterator for all items with given prefix in the trie. For
-	 * obejcts o1, o2 and o3 added with "foo", "foobar" "blah" respectively,
-	 * getItemWithPrefix("foo") returns an Iterator over o1 an o2.
+	 * Returns an {@link Iterator} for all items with given prefix in the
+	 * {@link Trie}. For objects <code>o1</code>, <code>o2</code> and
+	 * <code>o3</code> added with <code>"foo"</code>, <code>"foobar"</code> and
+	 * <code>"blah"</code> respectively, <code>getItemWithPrefix("foo")</code>
+	 * returns an {@link Iterator} over <code>o1</code> and <code>o2</code>.
 	 *
 	 * @param prefix
 	 * @return An Iterator of Strings from Trie containing the Strings
