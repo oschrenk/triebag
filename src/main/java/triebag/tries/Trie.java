@@ -126,8 +126,6 @@ public class Trie<T> implements Iterable<T> {
 		CharNode<T> node = root;
 		CharNode<T> previousNode = root;
 
-		System.out.println(root);
-
 		int i = 0;
 		while (i < prefix.length() && node != null) {
 			previousNode = node;
