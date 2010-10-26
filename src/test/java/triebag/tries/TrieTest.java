@@ -61,6 +61,16 @@ public class TrieTest {
 		assertEquals("b", ptrie.getItem("foo"));
 	}
 
+	@Test
+	public void testGetItemsInString() {
+		Trie<String> trie = new Trie<String>();
+		trie.add("mo", "a");
+		trie.add("motor", "b");
+		trie.add("motorway", "c");
+
+		assertEquals(3, trie.getItemsInString("motorway").size());
+	}
+
 	private List<String> toList(final Iterator<String> it) {
 		ArrayList<String> list = new ArrayList<String>();
 		while (it.hasNext()) {
