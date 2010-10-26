@@ -2,7 +2,9 @@ package triebag.tries;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
+import java.util.List;
 
 public class Trie<T> implements Iterable<T> {
 
@@ -123,7 +125,7 @@ public class Trie<T> implements Iterable<T> {
 	 * @param prefix
 	 * @return An Iterator of Strings from Trie containing the Strings
 	 */
-	public Iterator<T> getItemsWithPrefix(final CharSequence prefix) {
+	public Collection<T> getItemsWithPrefix(final CharSequence prefix) {
 
 		CharNode<T> node = root;
 		CharNode<T> previousNode = root;
@@ -135,7 +137,16 @@ public class Trie<T> implements Iterable<T> {
 			i++;
 		}
 
-		return new SimplePrefixTrieIterator<T>(previousNode);
+		List<T> nodes = new ArrayList<T>();
+
+		Iterator<T> iter = new SimplePrefixTrieIterator<T>(previousNode);
+		while (iter.hasNext()) {
+			nodes.add(iter.next());
+		}
+
+		if (nodes.isEmpty())
+			return Collections.emptyList();
+		return nodes;
 	}
 
 	@Override

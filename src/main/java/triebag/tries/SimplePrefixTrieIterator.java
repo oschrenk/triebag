@@ -5,20 +5,28 @@ import java.util.Stack;
 
 public class SimplePrefixTrieIterator<T> implements Iterator<T> {
 
-	private final Stack<CharNode<T>> others = new Stack<CharNode<T>>();
+	private final Stack<CharNode<T>> nodesToInspect = new Stack<CharNode<T>>();
 	private CharNode<T> nextNodeWithItem = null;
 
 	protected SimplePrefixTrieIterator(final CharNode<T> startNode) {
-		others.push(startNode);
+		for (CharNode<T> node : startNode.getChildren()) {
+			nodesToInspect.push(node);
+		}
 	}
 
 	private void walkToNextFullNode() {
 
 		nextNodeWithItem = null;
-		while (!others.empty()) {
-			CharNode<T> n = others.pop();
+		while (!nodesToInspect.empty()) {
+			CharNode<T> n = nodesToInspect.pop();
+
+			for (CharNode<T> node : n.getChildren()) {
+				nodesToInspect.push(node);
+			}
+
 			if (n.getItem() != null) {
 				nextNodeWithItem = n;
+				break;
 			}
 		}
 	}

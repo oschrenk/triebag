@@ -2,63 +2,59 @@ package triebag.tries;
 
 import static org.junit.Assert.assertEquals;
 
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-
 import org.junit.Test;
 
 public class TrieTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testNullCharStream() throws NullPointerException {
-		Trie<String> ptrie = new Trie<String>();
-		ptrie.add(null, new String());
+		Trie<String> trie = new Trie<String>();
+		trie.add(null, new String());
 	}
 
 	@Test
 	public void testEmptyTrie() {
-		Trie<String> ptrie = new Trie<String>();
-		assertEquals(0, toList(ptrie.getItemsWithPrefix("foo")).size());
+		Trie<String> trie = new Trie<String>();
+		assertEquals(0, trie.getItemsWithPrefix("foo").size());
 	}
 
 	@Test
 	public void testSingleInsertion() {
-		Trie<String> ptrie = new Trie<String>();
-		ptrie.add("foo", "a");
-		assertEquals("a", ptrie.getItem("foo"));
+		Trie<String> trie = new Trie<String>();
+		trie.add("foo", "a");
+		assertEquals("a", trie.getItem("foo"));
 	}
 
 	@Test
 	public void testSameStringInsertionsReplaces() {
-		Trie<String> ptrie = new Trie<String>();
-		ptrie.add("foo", "a");
-		ptrie.add("foo", "b");
-		assertEquals("b", ptrie.getItem("foo"));
+		Trie<String> trie = new Trie<String>();
+		trie.add("foo", "a");
+		trie.add("foo", "b");
+		assertEquals("b", trie.getItem("foo"));
 	}
 
 	@Test
 	public void testDifferentStringInsertion() {
-		Trie<String> ptrie = new Trie<String>();
-		ptrie.add("foo", "a");
-		ptrie.add("bar", "b");
-		assertEquals("a", ptrie.getItem("foo"));
-		assertEquals("b", ptrie.getItem("bar"));
+		Trie<String> trie = new Trie<String>();
+		trie.add("foo", "a");
+		trie.add("bar", "b");
+		assertEquals("a", trie.getItem("foo"));
+		assertEquals("b", trie.getItem("bar"));
 	}
 
 	@Test
 	public void testSubStringInsertion() {
-		Trie<String> ptrie = new Trie<String>();
-		ptrie.add("foo", "a");
-		ptrie.add("foobar", "b");
-		assertEquals("a", ptrie.getItem("foo"));
-		assertEquals("b", ptrie.getItem("foobar"));
+		Trie<String> trie = new Trie<String>();
+		trie.add("foo", "a");
+		trie.add("foobar", "b");
+		assertEquals("a", trie.getItem("foo"));
+		assertEquals("b", trie.getItem("foobar"));
 
-		ptrie = new Trie<String>();
-		ptrie.add("foobar", "a");
-		ptrie.add("foo", "b");
-		assertEquals("a", ptrie.getItem("foobar"));
-		assertEquals("b", ptrie.getItem("foo"));
+		trie = new Trie<String>();
+		trie.add("foobar", "a");
+		trie.add("foo", "b");
+		assertEquals("a", trie.getItem("foobar"));
+		assertEquals("b", trie.getItem("foo"));
 	}
 
 	@Test
@@ -71,12 +67,14 @@ public class TrieTest {
 		assertEquals(3, trie.getItemsInString("motorway").size());
 	}
 
-	private List<String> toList(final Iterator<String> it) {
-		ArrayList<String> list = new ArrayList<String>();
-		while (it.hasNext()) {
-			list.add(it.next());
-		}
-		return list;
+	@Test
+	public void testGetItemsWithPrefix() {
+		Trie<String> trie = new Trie<String>();
+		trie.add("mot", "a");
+		trie.add("motor", "b");
+		trie.add("motorway", "c");
+
+		assertEquals(3, trie.getItemsWithPrefix("mo").size());
 	}
 
 }
