@@ -1,27 +1,15 @@
 package triebag.tries;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.fail;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import org.junit.Test;
 
-import triebag.tries.SimpleTrie;
-
-import static org.junit.Assert.*;
-
 public class SimpleTrieTest {
-
-	class Foo {
-	}
-
-	private List<Foo> toList(Iterator<Foo> it) {
-		ArrayList<Foo> list = new ArrayList<Foo>();
-		while (it.hasNext()) {
-			list.add(it.next());
-		}
-		return list;
-	}
 
 	@Test
 	public void testNullCharStream() {
@@ -34,7 +22,6 @@ public class SimpleTrieTest {
 		}
 	}
 
-	@Test
 	public void testEmptyTrie() {
 		SimpleTrie<Foo> ptrie = new SimpleTrie<Foo>();
 		assertEquals(0, toList(ptrie.getItemsWithPrefix("foo")).size());
@@ -83,6 +70,20 @@ public class SimpleTrieTest {
 		ptrie.add("foo", b2);
 		assertEquals(b, ptrie.getItem("foobar"));
 		assertEquals(b2, ptrie.getItem("foo"));
+	}
+
+	private List<Foo> toList(final Iterator<Foo> it) {
+		ArrayList<Foo> list = new ArrayList<Foo>();
+		while (it.hasNext()) {
+			list.add(it.next());
+		}
+		return list;
+	}
+
+	/**
+	 * Empty inner class for test purposes
+	 */
+	class Foo {
 	}
 
 }
