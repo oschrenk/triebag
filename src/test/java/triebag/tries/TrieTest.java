@@ -8,7 +8,7 @@ import java.util.List;
 
 import org.junit.Test;
 
-public class SimpleTrieTest {
+public class TrieTest {
 
 	@Test(expected = NullPointerException.class)
 	public void testNullCharStream() throws NullPointerException {
